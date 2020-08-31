@@ -83,13 +83,13 @@ def main():
     model.fit(X_train,Y_train)
     print("===== Train Accuracy =====")
     accuracy(model.predict(X_train), Y_train)
-    
+
     print("===== Test Accuracy =====")
     accuracy(model.predict(X_test), Y_test)
 
     print("Time for training and test: %.2f seconds" % (time.time() - start_time))
 
-
+    print("Top 10 most hateful words: ", feat_extractor.untransform(np.argsort(model.loglikelihood[1] - model.loglikelihood[0])[-10:]))
 
 if __name__ == '__main__':
     main()
