@@ -52,41 +52,32 @@ class NaiveBayesClassifier(HateSpeechClassifier):
 
     def fit(self, X, Y):
         # Add your code here!
-        df_X = pd.DataFrame(X)
-        df_Y = pd.DataFrame(Y)
+        np_X = np.array(X)
+        np_Y = np.array(Y)
 
-        self.classes = [0, 1]
+        classes = [0, 1]
 
-        num_doc = X.shape[0]
-        self.V = X.shape[1]
+        num_doc, V = np_X.shape
 
-        self.loglikelihood = np.zeros((len(self.classes), self.V))
+        self.loglikelihood = np.zeros((V, len(classes)))
 
-        num_pos = sum(Y)
-        num_class = [len(Y) - num_pos, num_pos]
+        num_positive = sum(Y)
+        num_classes = np.array([len(Y) - num_positive, num_positive])
 
-        for c in self.classes:
-            self.logprior[c] = log(num_class[c] / num_doc)
+        self.logprior = np.log(num_classes / num_doc)
 
-            count_w_given_c = df_X[(df_Y == c).label].sum() + 1
+        for c in classes:
+            count_w_given_c = np_X[(np_Y == c)].sum(axis=0) + 1
             total_count_smooth = count_w_given_c.sum()
 
-            for w in range(self.V):
-                self.loglikelihood[c, w] = log(count_w_given_c[w] / total_count_smooth)
-
+            self.loglikelihood[:, c] = np.log(count_w_given_c / total_count_smooth)
 
 
     def predict(self, X):
         # Add your code here!
-        answer = []
+        np_X = np.array(X)
 
-        for d in range(X.shape[0]):
-            sums = (self.loglikelihood * X[d]).sum(axis=1) + self.logprior
-            if sums[0] > sums[1]:
-                answer.append(0)
-            else:
-                answer.append(1)
-        return answer
+        return np.argmax(np_X.dot(self.loglikelihood) + self.logprior, axis=1)
 
 
 # TODO: Implement this

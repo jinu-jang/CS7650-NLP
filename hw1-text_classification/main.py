@@ -89,7 +89,7 @@ def main():
 
     print("Time for training and test: %.2f seconds" % (time.time() - start_time))
 
-    print("Top 10 most hateful words: ", feat_extractor.untransform(np.argsort(model.loglikelihood[1] - model.loglikelihood[0])[-10:]))
+    print("Top 10 most hateful words: ", feat_extractor.untransform(np.argsort(model.loglikelihood[:,1] - model.loglikelihood[:,0])[-10:]))
 
 if __name__ == '__main__':
     main()
